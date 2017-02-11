@@ -113,4 +113,12 @@ public class TweetApiApplicationTests {
 		assertThat(entity.getBody().getTweets().get(2).getText()).isEqualTo("tweet1");
 	}
 
+	@Test
+	public void shouldBeAbleToFollowAUser() throws Exception {
+		// Given when
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity("/tweets/followUser/user1", "user2", String.class);
+
+		// Then
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+	}
 }

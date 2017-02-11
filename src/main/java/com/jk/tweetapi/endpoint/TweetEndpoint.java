@@ -27,6 +27,7 @@ import com.jk.tweetapi.domain.TweetFeed;
 public class TweetEndpoint {
 
     private Map<String, Set<Tweet>> userTweets = new HashMap<>();
+    private Map<String, Set<String>> followingUsers = new HashMap<>();
 
     /**
      * Publish a tweet
@@ -54,6 +55,14 @@ public class TweetEndpoint {
             tweetFeed.setTweets(new ArrayList<>(userTweets.get(userId)));
         }
         return tweetFeed;
+    }
+
+    @RequestMapping(value = "/followUser/{userId}", method= RequestMethod.POST)
+    public ResponseEntity followUser(@PathVariable("userId") String userId, @RequestBody String followingUser) {
+        HttpStatus status = HttpStatus.CREATED;
+        ResponseEntity responseEntity = new ResponseEntity(status);
+        return responseEntity;
+
     }
 
 }
