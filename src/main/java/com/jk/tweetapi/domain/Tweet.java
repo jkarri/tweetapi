@@ -1,5 +1,7 @@
 package com.jk.tweetapi.domain;
 
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * The tweet generates the timestamp when created.
  */
 public class Tweet {
+    @Size(max = 140)
     private String text;
 
     @JsonCreator

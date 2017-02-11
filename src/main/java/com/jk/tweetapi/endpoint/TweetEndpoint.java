@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +35,7 @@ public class TweetEndpoint {
      * @return {@link HttpStatus}
      */
     @RequestMapping(value = "/addTweet/{userId}", method = RequestMethod.POST)
-    public ResponseEntity addTweet(@PathVariable("userId") String userId, @RequestBody Tweet tweet) {
+    public ResponseEntity addTweet(@PathVariable("userId") String userId, @Valid @RequestBody Tweet tweet) {
         List<Tweet> tweets = new ArrayList<>();
         tweets.add(tweet);
         userTweets.put(userId, tweets);
