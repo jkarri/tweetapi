@@ -64,4 +64,32 @@ public class TweetApiApplicationTests {
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
+	@Test
+	public void userShouldBeAbleToPostATweetOfLength140Characters() throws IOException {
+		// Given
+		Tweet tweet = new Tweet("asdfaksdfgkjahgsdfkjgasdkjfghaskjdhgfkjashgdfasjkgdfwgfwuegfkajhsdgfasjhgdfaksjhg"
+						+ "dfajskhdgfjkashgdfkjashgdfkjahgsdkfjhgaskjdfgaksjhdgfkajsha");
+
+		// When
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity("/tweets/addTweet/user1", tweet, String.class);
+
+		// When
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+	}
+
+	@Test
+	public void userShouldSeeMoreThanOnePublishedTweet() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet2"), String.class);
+
+		// When
+		ResponseEntity<TweetFeed> entity = this.restTemplate.getForEntity("/tweets/user1", TweetFeed.class);
+
+		// Then
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody().getTweets()).isNotNull();
+		assertThat(entity.getBody().getTweets().size()).isEqualTo(2);
+	}
+
 }

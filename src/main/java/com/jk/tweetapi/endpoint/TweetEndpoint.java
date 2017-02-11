@@ -36,9 +36,13 @@ public class TweetEndpoint {
      */
     @RequestMapping(value = "/addTweet/{userId}", method = RequestMethod.POST)
     public ResponseEntity addTweet(@PathVariable("userId") String userId, @Valid @RequestBody Tweet tweet) {
-        List<Tweet> tweets = new ArrayList<>();
-        tweets.add(tweet);
-        userTweets.put(userId, tweets);
+        if (userTweets.get(userId) == null) {
+            List<Tweet> tweets = new ArrayList<>();
+            tweets.add(tweet);
+            userTweets.put(userId, tweets);
+        } else {
+            userTweets.get(userId).add(tweet);
+        }
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
