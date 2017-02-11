@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.jk.tweetapi.domain.Tweet;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TweetApiApplicationTests {
 
 	@Autowired
@@ -90,6 +92,25 @@ public class TweetApiApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody().getTweets()).isNotNull();
 		assertThat(entity.getBody().getTweets().size()).isEqualTo(2);
+	}
+
+	@Test
+	public void userShouldSeeThePublishedTweetsInReverseChronologicalOrder() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet2"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet3"), String.class);
+
+		// When
+		ResponseEntity<TweetFeed> entity = this.restTemplate.getForEntity("/tweets/user1", TweetFeed.class);
+
+		// Then
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody().getTweets()).isNotNull();
+		assertThat(entity.getBody().getTweets().size()).isEqualTo(3);
+		assertThat(entity.getBody().getTweets().get(0).getText()).isEqualTo("tweet3");
+		assertThat(entity.getBody().getTweets().get(1).getText()).isEqualTo("tweet2");
+		assertThat(entity.getBody().getTweets().get(2).getText()).isEqualTo("tweet1");
 	}
 
 }

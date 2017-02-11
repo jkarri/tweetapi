@@ -2,8 +2,9 @@ package com.jk.tweetapi.endpoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.validation.Valid;
 
@@ -25,7 +26,7 @@ import com.jk.tweetapi.domain.TweetFeed;
 @RequestMapping("/tweets")
 public class TweetEndpoint {
 
-    private Map<String, List<Tweet>> userTweets = new HashMap<>();
+    private Map<String, Set<Tweet>> userTweets = new HashMap<>();
 
     /**
      * Publish a tweet
@@ -37,7 +38,7 @@ public class TweetEndpoint {
     @RequestMapping(value = "/addTweet/{userId}", method = RequestMethod.POST)
     public ResponseEntity addTweet(@PathVariable("userId") String userId, @Valid @RequestBody Tweet tweet) {
         if (userTweets.get(userId) == null) {
-            List<Tweet> tweets = new ArrayList<>();
+            Set<Tweet> tweets = new TreeSet<>();
             tweets.add(tweet);
             userTweets.put(userId, tweets);
         } else {
@@ -49,7 +50,9 @@ public class TweetEndpoint {
     @RequestMapping(method = RequestMethod.GET, value = "/{userId}", produces = "application/json")
     public TweetFeed tweets(@PathVariable String userId) {
         TweetFeed tweetFeed = new TweetFeed();
-        tweetFeed.setTweets(userTweets.get(userId));
+        if (userTweets.get(userId) != null) {
+            tweetFeed.setTweets(new ArrayList<>(userTweets.get(userId)));
+        }
         return tweetFeed;
     }
 
