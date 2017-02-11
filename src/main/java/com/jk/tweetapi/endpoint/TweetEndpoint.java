@@ -1,5 +1,10 @@
 package com.jk.tweetapi.endpoint;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,20 +23,27 @@ import com.jk.tweetapi.domain.TweetFeed;
 @RequestMapping("/tweets")
 public class TweetEndpoint {
 
+    private Map<String, List<Tweet>> userTweets = new HashMap<>();
+
     /**
      * Publish a tweet
+     *
      * @param userId userId
-     * @param text tweet text
+     * @param tweet   tweet with text
      * @return {@link HttpStatus}
      */
-    @RequestMapping(value = "/addTweet/{userId}", method= RequestMethod.POST)
-    public ResponseEntity addTweet(@PathVariable("userId") String userId, @RequestBody Tweet text) {
+    @RequestMapping(value = "/addTweet/{userId}", method = RequestMethod.POST)
+    public ResponseEntity addTweet(@PathVariable("userId") String userId, @RequestBody Tweet tweet) {
+        List<Tweet> tweets = new ArrayList<>();
+        tweets.add(tweet);
+        userTweets.put(userId, tweets);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @RequestMapping(method= RequestMethod.GET, value = "/{userId}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{userId}", produces = "application/json")
     public TweetFeed tweets(@PathVariable String userId) {
         TweetFeed tweetFeed = new TweetFeed();
+        tweetFeed.setTweets(userTweets.get(userId));
         return tweetFeed;
     }
 
