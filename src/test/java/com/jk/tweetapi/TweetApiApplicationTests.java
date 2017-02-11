@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.jk.tweetapi.domain.Tweet;
+import com.jk.tweetapi.domain.TweetFeed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,4 +35,17 @@ public class TweetApiApplicationTests {
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 	}
 
+	@Test
+	public void userShouldSeePublishedTweet() throws IOException {
+		// Given
+		Tweet tweet = new Tweet("some tweet");
+		restTemplate.postForEntity("/tweets/addTweet/user1", tweet, String.class);
+
+		// When
+		ResponseEntity<TweetFeed> entity = this.restTemplate.getForEntity("/tweets/user1", TweetFeed.class);
+
+		// Then
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody().getTweets()).isNotNull();
+	}
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jk.tweetapi.domain.Tweet;
+import com.jk.tweetapi.domain.TweetFeed;
 
 /**
  * Endpoint to publish, view tweets, follow users and see tweets from followed users.
@@ -26,6 +27,12 @@ public class TweetEndpoint {
     @RequestMapping(value = "/addTweet/{userId}", method= RequestMethod.POST)
     public ResponseEntity addTweet(@PathVariable("userId") String userId, @RequestBody Tweet text) {
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(method= RequestMethod.GET, value = "/{userId}", produces = "application/json")
+    public TweetFeed tweets(@PathVariable String userId) {
+        TweetFeed tweetFeed = new TweetFeed();
+        return tweetFeed;
     }
 
 }
