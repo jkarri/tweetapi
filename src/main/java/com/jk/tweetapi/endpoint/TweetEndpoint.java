@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jk.tweetapi.domain.Tweet;
@@ -83,13 +82,13 @@ public class TweetEndpoint {
     @ApiOperation(value = "allows for a given user to follow another user", nickname = "follow a user")
     @ApiImplicitParams({
                     @ApiImplicitParam(name = "userId", value = "user id", required = true, dataType = "string", paramType = "path", defaultValue="Jana"),
-                    @ApiImplicitParam(name = "followingUser", value = "user id", required = true, dataType = "string", paramType = "query", defaultValue="Mark")
+                    @ApiImplicitParam(name = "followingUser", value = "user id", required = true, dataType = "string", paramType = "body", defaultValue="Mark")
     })
     @ApiResponses(value = {
                     @ApiResponse(code = 201, message = "Success", response = ResponseEntity.class),
                     @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value = "/followUser/{userId}", method= RequestMethod.POST)
-    public ResponseEntity followUser(@PathVariable("userId") String userId, @RequestParam String followingUser) {
+    public ResponseEntity followUser(@PathVariable("userId") String userId, @RequestBody String followingUser) {
         tweetService.followUser(userId, followingUser);
         return new ResponseEntity(HttpStatus.CREATED);
 

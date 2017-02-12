@@ -13,6 +13,7 @@ Tweet API provides the following functionality:
 > Sample request
  <pre>
     POST http://localhost:8080/tweets/addTweet/Jana
+    BODY
       {
         "text" : "sample tweet"
       }
@@ -33,7 +34,8 @@ Tweet API provides the following functionality:
    
  > Sample request
  <pre>
-     POST http://localhost:8080/tweets/followUser/{userId}?followingUser=Mark
+     POST http://localhost:8080/tweets/followUser/{userId}
+     BODY: Mark
  </pre>
     
 #### Get my tweet feed from my following users
