@@ -27,7 +27,6 @@ public class InMemoryTweetService implements TweetService {
 
     public void addTweet(String userId, final Tweet tweet) {
         userTweets.computeIfAbsent(userId, k -> new TreeSet<>()).add(tweet);
-        System.out.println(userTweets.size());
     }
 
     public void followUser(String userId, String followedUser) {
