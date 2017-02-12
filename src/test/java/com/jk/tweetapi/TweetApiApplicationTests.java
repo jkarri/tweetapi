@@ -1,6 +1,7 @@
 package com.jk.tweetapi;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,5 +121,35 @@ public class TweetApiApplicationTests {
 
 		// Then
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+	}
+
+	@Test
+	public void shouldSeeTweetFollowedByTheGivenUser() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user2", new Tweet("tweet2"), String.class);
+
+		// When
+		restTemplate.postForEntity("/tweets/followUser/user1", "user2", String.class);
+
+		// Then
+		ResponseEntity<TweetFeed> entity =  this.restTemplate.getForEntity("/tweets/feed/user1", TweetFeed.class);
+		List<Tweet> tweets = entity.getBody().getTweets();
+		assertThat(tweets.size()).isEqualTo(1);
+		assertThat(tweets.get(0).getText()).isEqualTo("tweet2");
+	}
+
+	@Test
+	public void shouldSeeEmptyTweetFeedWhenFollowedUserHasNotPostedAnyTweets() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+
+		// When
+		restTemplate.postForEntity("/tweets/followUser/user1", "user2", String.class);
+
+		// Then
+		ResponseEntity<TweetFeed> entity =  this.restTemplate.getForEntity("/tweets/feed/user1", TweetFeed.class);
+		List<Tweet> tweets = entity.getBody().getTweets();
+		assertThat(tweets).isNullOrEmpty();
 	}
 }

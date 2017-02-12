@@ -1,10 +1,13 @@
 package com.jk.tweetapi.endpoint;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -59,10 +62,27 @@ public class TweetEndpoint {
 
     @RequestMapping(value = "/followUser/{userId}", method= RequestMethod.POST)
     public ResponseEntity followUser(@PathVariable("userId") String userId, @RequestBody String followingUser) {
+        Set<String> users = new HashSet<>();
+        users.add(followingUser);
+        followingUsers.put(userId, users);
         HttpStatus status = HttpStatus.CREATED;
         ResponseEntity responseEntity = new ResponseEntity(status);
         return responseEntity;
 
+    }
+
+    @RequestMapping(method= RequestMethod.GET, value = "/feed/{userId}")
+    public TweetFeed feed(@PathVariable String userId) {
+        Set<String> following = followingUsers.get(userId);
+
+        TweetFeed tweetFeed = new TweetFeed();
+        if (following != null && !following.isEmpty()) {
+            tweetFeed.setTweets(new ArrayList<>(following.stream()
+                            .map(user -> userTweets.get(user))
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toSet())));
+        }
+        return tweetFeed;
     }
 
 }
