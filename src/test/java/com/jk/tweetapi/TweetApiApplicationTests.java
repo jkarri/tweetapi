@@ -172,4 +172,34 @@ public class TweetApiApplicationTests {
 		assertThat(tweets.get(1).getText()).isEqualTo("tweet3");
 		assertThat(tweets.get(2).getText()).isEqualTo("tweet2");
 	}
+
+	@Test
+	public void shouldSeeTweetsFromMultipleUsersFollowedByTheGivenUserInReverseChronologicalOrder() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+
+		restTemplate.postForEntity("/tweets/addTweet/user4", new Tweet("tweet2"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user2", new Tweet("tweet3"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user5", new Tweet("tweet4"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user3", new Tweet("tweet5"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user4", new Tweet("tweet6"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user5", new Tweet("tweet7"), String.class);
+
+		// When
+		restTemplate.postForEntity("/tweets/followUser/user1", "user2", String.class);
+		restTemplate.postForEntity("/tweets/followUser/user1", "user3", String.class);
+		restTemplate.postForEntity("/tweets/followUser/user1", "user4", String.class);
+		restTemplate.postForEntity("/tweets/followUser/user1", "user5", String.class);
+
+		// Then
+		ResponseEntity<TweetFeed> entity =  this.restTemplate.getForEntity("/tweets/feed/user1", TweetFeed.class);
+		List<Tweet> tweets = entity.getBody().getTweets();
+		assertThat(tweets.size()).isEqualTo(6);
+		assertThat(tweets.get(0).getText()).isEqualTo("tweet7");
+		assertThat(tweets.get(1).getText()).isEqualTo("tweet6");
+		assertThat(tweets.get(2).getText()).isEqualTo("tweet5");
+		assertThat(tweets.get(3).getText()).isEqualTo("tweet4");
+		assertThat(tweets.get(4).getText()).isEqualTo("tweet3");
+		assertThat(tweets.get(5).getText()).isEqualTo("tweet2");
+	}
 }

@@ -62,12 +62,15 @@ public class TweetEndpoint {
 
     @RequestMapping(value = "/followUser/{userId}", method= RequestMethod.POST)
     public ResponseEntity followUser(@PathVariable("userId") String userId, @RequestBody String followingUser) {
-        Set<String> users = new HashSet<>();
-        users.add(followingUser);
-        followingUsers.put(userId, users);
-        HttpStatus status = HttpStatus.CREATED;
-        ResponseEntity responseEntity = new ResponseEntity(status);
-        return responseEntity;
+        if (followingUsers.get(userId) == null) {
+            Set<String> users = new HashSet<>();
+            users.add(followingUser);
+            followingUsers.put(userId, users);
+        } else {
+            followingUsers.get(userId).add(followingUser);
+        }
+
+        return new ResponseEntity(HttpStatus.CREATED);
 
     }
 
