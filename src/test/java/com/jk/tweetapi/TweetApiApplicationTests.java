@@ -152,4 +152,24 @@ public class TweetApiApplicationTests {
 		List<Tweet> tweets = entity.getBody().getTweets();
 		assertThat(tweets).isNullOrEmpty();
 	}
+
+	@Test
+	public void shouldSeeTweetsFollowedByTheGivenUserInReverseChronologicalOrder() throws IOException {
+		// Given
+		restTemplate.postForEntity("/tweets/addTweet/user1", new Tweet("tweet1"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user2", new Tweet("tweet2"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user2", new Tweet("tweet3"), String.class);
+		restTemplate.postForEntity("/tweets/addTweet/user2", new Tweet("tweet4"), String.class);
+
+		// When
+		restTemplate.postForEntity("/tweets/followUser/user1", "user2", String.class);
+
+		// Then
+		ResponseEntity<TweetFeed> entity =  this.restTemplate.getForEntity("/tweets/feed/user1", TweetFeed.class);
+		List<Tweet> tweets = entity.getBody().getTweets();
+		assertThat(tweets.size()).isEqualTo(3);
+		assertThat(tweets.get(0).getText()).isEqualTo("tweet4");
+		assertThat(tweets.get(1).getText()).isEqualTo("tweet3");
+		assertThat(tweets.get(2).getText()).isEqualTo("tweet2");
+	}
 }

@@ -77,10 +77,10 @@ public class TweetEndpoint {
 
         TweetFeed tweetFeed = new TweetFeed();
         if (following != null && !following.isEmpty()) {
-            tweetFeed.setTweets(new ArrayList<>(following.stream()
+            tweetFeed.setTweets(new ArrayList<>(new TreeSet<>(following.stream()
                             .map(user -> userTweets.get(user))
                             .flatMap(Collection::stream)
-                            .collect(Collectors.toSet())));
+                            .collect(Collectors.toSet()))));
         }
         return tweetFeed;
     }
